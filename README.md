@@ -25,10 +25,10 @@ O Armário Inteligente é um sistema de gerenciamento para condomínios que perm
 
 ### Clonando o Repositório
 
-```bash
+`bash
 git clone https://github.com/sammblanc/ArmarioInteligente2.0.git
 cd armario-inteligente
-```
+`
 
 ### Configuração do Banco de Dados
 
