@@ -25,10 +25,10 @@ O Armário Inteligente é um sistema de gerenciamento para condomínios que perm
 
 ### Clonando o Repositório
 
-`bash
+```bash
 git clone https://github.com/sammblanc/ArmarioInteligente2.0.git
 cd armario-inteligente
-`
+```
 
 ### Configuração do Banco de Dados
 
@@ -38,43 +38,43 @@ O projeto está configurado para usar H2 Database em memória para desenvolvimen
 
 1. Crie um banco de dados PostgreSQL:
 
-\`\`\`sql
+```sql
 CREATE DATABASE armariointeligente;
 CREATE USER armariointeligente WITH ENCRYPTED PASSWORD 'sua_senha';
 GRANT ALL PRIVILEGES ON DATABASE armariointeligente TO armariointeligente;
-\`\`\`
+```
 
 2. Configure as credenciais no arquivo `src/main/resources/application-prod.properties`:
 
-\`\`\`properties
+```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/armariointeligente
 spring.datasource.username=armariointeligente
 spring.datasource.password=sua_senha
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-\`\`\`
+```
 
 ## Compilação e Execução
 
 ### Compilando o Projeto
 
-\`\`\`bash
+```bash
 ./mvnw clean package
-\`\`\`
+```
 
 ### Executando o Projeto
 
 #### Ambiente de Desenvolvimento (H2 Database)
 
-\`\`\`bash
+```bash
 ./mvnw spring-boot:run
-\`\`\`
+```
 
 #### Ambiente de Produção (PostgreSQL)
 
-\`\`\`bash
+```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
-\`\`\`
+```
 
 ## Acessando a Aplicação
 
@@ -86,22 +86,22 @@ spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 O sistema utiliza autenticação JWT. Para obter um token, faça uma requisição POST para `/api/v1/auth/login` com as seguintes credenciais:
 
-\`\`\`json
+```json
 {
   "email": "admin@smartlocker.com",
   "senha": "admin123"
 }
-\`\`\`
+```
 
 Use o token retornado no cabeçalho `Authorization` das requisições subsequentes:
 
-\`\`\`
+```
 Authorization: Bearer seu_token_jwt
-\`\`\`
+```
 
 ## Estrutura do Projeto
 
-\`\`\`
+```
 src/main/java/br/com/unit/tokseg/armariointeligente/
 ├── ArmariointeligenteApplication.java
 ├── config/
@@ -159,7 +159,7 @@ src/main/java/br/com/unit/tokseg/armariointeligente/
     ├── ReservaService.java
     ├── TipoUsuarioService.java
     └── UsuarioService.java
-\`\`\`
+```
 
 ## Endpoints da API
 
@@ -285,7 +285,7 @@ Para contribuir com o projeto:
 ## Licença
 
 Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para mais detalhes.
-\`\`\`
+```
 
 ```xml file="pom.xml"
 <?xml version="1.0" encoding="UTF-8"?>
