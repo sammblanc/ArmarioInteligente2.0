@@ -1,0 +1,358 @@
+### Variáveis
+@baseUrl = http://localhost:8080
+@authToken = {{login.response.body.token}}
+
+### Autenticação
+# @name login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@smartlocker.com",
+  "senha": "admin123"
+}
+
+### Usuários
+# Listar todos os usuários
+GET {{baseUrl}}/api/v1/usuarios
+Authorization: Bearer {{authToken}}
+
+### Buscar usuário por ID
+GET {{baseUrl}}/api/v1/usuarios/1
+Authorization: Bearer {{authToken}}
+
+### Criar novo usuário (requer permissão de ADMINISTRADOR)
+POST {{baseUrl}}/api/v1/usuarios
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Novo Usuário",
+  "email": "novo@example.com",
+  "senha": "senha123",
+  "telefone": "81999995555",
+  "tipoUsuario": {
+    "id": 1
+  }
+}
+
+### Atualizar usuário
+PUT {{baseUrl}}/api/v1/usuarios/2
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Usuário Atualizado",
+  "email": "atualizado@example.com",
+  "senha": "novasenha123",
+  "telefone": "81999994444",
+  "tipoUsuario": {
+    "id": 1
+  }
+}
+
+### Deletar usuário (requer permissão de ADMINISTRADOR)
+DELETE {{baseUrl}}/api/v1/usuarios/3
+Authorization: Bearer {{authToken}}
+
+### Desativar usuário (alternativa recomendada à exclusão)
+PUT {{baseUrl}}/api/v1/usuarios/3/desativar
+Authorization: Bearer {{authToken}}
+
+### Reativar usuário
+PUT {{baseUrl}}/api/v1/usuarios/3/ativar
+Authorization: Bearer {{authToken}}
+
+### Listar apenas usuários ativos
+GET {{baseUrl}}/api/v1/usuarios/ativos
+Authorization: Bearer {{authToken}}
+
+### Tipos de Usuário
+# Listar todos os tipos de usuário
+GET {{baseUrl}}/api/v1/tipos-usuarios
+Authorization: Bearer {{authToken}}
+
+### Buscar tipo de usuário por ID
+GET {{baseUrl}}/api/v1/tipos-usuarios/1
+Authorization: Bearer {{authToken}}
+
+### Criar novo tipo de usuário
+POST {{baseUrl}}/api/v1/tipos-usuarios
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "VISITANTE",
+  "descricao": "Usuário visitante com acesso limitado"
+}
+
+### Atualizar tipo de usuário
+PUT {{baseUrl}}/api/v1/tipos-usuarios/4
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "VISITANTE_ATUALIZADO",
+  "descricao": "Descrição atualizada para visitante"
+}
+
+#### Deletar tipo de usuário
+DELETE {{baseUrl}}/api/v1/tipos-usuarios/4
+Authorization: Bearer {{authToken}}
+
+### Condomínios
+# Listar todos os condomínios
+GET {{baseUrl}}/api/v1/condominios
+Authorization: Bearer {{authToken}}
+
+### Buscar condomínio por ID
+GET {{baseUrl}}/api/v1/condominios/1
+Authorization: Bearer {{authToken}}
+
+### Criar novo condomínio
+POST {{baseUrl}}/api/v1/condominios
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Condomínio novo",
+  "endereco": "Rua Nova, 123",
+  "cep": "56784784",
+  "cidade": "city",
+  "estado": "state",
+  "telefone": "81999998888",
+  "email": "email@example.com"
+}
+
+### Atualizar condomínio
+PUT {{baseUrl}}/api/v1/condominios/2
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Condomínio Atualizado",
+  "endereco": "Rua Atualizada, 456",
+  "cep": "56784784",
+  "cidade": "city",
+  "estado": "state",
+  "telefone": "81999997777",
+  "email": "atualizado@example.com"
+}
+
+### Deletar condomínio
+DELETE {{baseUrl}}/api/v1/condominios/3
+Authorization: Bearer {{authToken}}
+
+### Armários
+# Listar todos os armários
+GET {{baseUrl}}/api/v1/armarios
+Authorization: Bearer {{authToken}}
+
+### Listar armários por condomínio
+GET {{baseUrl}}/api/v1/armarios/condominio/1
+Authorization: Bearer {{authToken}}
+
+### Buscar armário por ID
+GET {{baseUrl}}/api/v1/armarios/1
+Authorization: Bearer {{authToken}}
+
+### Criar novo armário
+POST {{baseUrl}}/api/v1/armarios
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "identificacao": "Bloco B - Térreo",
+  "localizacao": "Entrada principal",
+  "condominio": {
+    "id": 1
+  }
+}
+
+### Atualizar armário
+PUT {{baseUrl}}/api/v1/armarios/2
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "identificacao": "Bloco A - Atualizado",
+  "localizacao": "Entrada lateral",
+  "condominio": {
+    "id": 1
+  }
+}
+
+### Deletar armário
+DELETE {{baseUrl}}/api/v1/armarios/3
+Authorization: Bearer {{authToken}}
+
+### Compartimentos
+# Listar todos os compartimentos
+GET {{baseUrl}}/api/v1/compartimentos
+Authorization: Bearer {{authToken}}
+
+### Listar compartimentos por armário
+GET {{baseUrl}}/api/v1/compartimentos/armario/1
+Authorization: Bearer {{authToken}}
+
+### Listar compartimentos por status (ocupado/livre)
+GET {{baseUrl}}/api/v1/compartimentos/status?ocupado=true
+Authorization: Bearer {{authToken}}
+
+### Buscar compartimento por ID
+GET {{baseUrl}}/api/v1/compartimentos/1
+Authorization: Bearer {{authToken}}
+
+### Criar novo compartimento
+POST {{baseUrl}}/api/v1/compartimentos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "numero": "A01",
+  "tamanho": "MEDIO",
+  "ocupado": false,
+  "codigoAcesso": "123456",
+  "armario": {
+    "id": 1
+  }
+}
+
+### Atualizar compartimento
+PUT {{baseUrl}}/api/v1/compartimentos/2
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "numero": "A02",
+  "tamanho": "GRANDE",
+  "ocupado": true,
+  "codigoAcesso": "654321",
+  "armario": {
+    "id": 2
+  }
+}
+
+### Atualizar status do compartimento
+PUT {{baseUrl}}/api/v1/compartimentos/1/status?ocupado=true
+Authorization: Bearer {{authToken}}
+
+### Gerar novo código de acesso
+PUT {{baseUrl}}/api/v1/compartimentos/1/codigo-acesso
+Authorization: Bearer {{authToken}}
+
+### Deletar compartimento
+DELETE {{baseUrl}}/api/v1/compartimentos/3
+Authorization: Bearer {{authToken}}
+
+### Reservas
+# Listar todas as reservas
+GET {{baseUrl}}/api/v1/reservas
+Authorization: Bearer {{authToken}}
+
+### Listar reservas por compartimento
+GET {{baseUrl}}/api/v1/reservas/compartimento/1
+Authorization: Bearer {{authToken}}
+
+### Listar reservas por usuário
+GET {{baseUrl}}/api/v1/reservas/usuario/1
+Authorization: Bearer {{authToken}}
+
+### Listar reservas por status
+GET {{baseUrl}}/api/v1/reservas/status/ATIVA
+Authorization: Bearer {{authToken}}
+
+### Listar reservas por período
+GET {{baseUrl}}/api/v1/reservas/periodo?inicio=2023-01-01T00:00:00&fim=2023-12-31T23:59:59
+Authorization: Bearer {{authToken}}
+
+### Buscar reserva por ID
+GET {{baseUrl}}/api/v1/reservas/1
+Authorization: Bearer {{authToken}}
+
+### Criar nova reserva
+POST {{baseUrl}}/api/v1/reservas
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "dataInicio": "2025-06-30T10:00:00",
+  "dataFim": "2025-06-30T10:00:00",
+  "status": "ATIVA",
+  "usuario": {
+    "id": 1
+  },
+  "compartimento": {
+    "id": 3
+  }
+}
+
+### Cancelar reserva
+PUT {{baseUrl}}/api/v1/reservas/1/cancelar
+Authorization: Bearer {{authToken}}
+
+### Concluir reserva
+PUT {{baseUrl}}/api/v1/reservas/2/concluir
+Authorization: Bearer {{authToken}}
+
+### Entregas
+# Listar todas as entregas (requer permissão de ADMINISTRADOR ou ENTREGADOR)
+GET {{baseUrl}}/api/v1/entregas
+Authorization: Bearer {{authToken}}
+
+### Listar entregas por compartimento
+GET {{baseUrl}}/api/v1/entregas/compartimento/1
+Authorization: Bearer {{authToken}}
+
+### Listar entregas por entregador
+GET {{baseUrl}}/api/v1/entregas/entregador/1
+Authorization: Bearer {{authToken}}
+
+### Listar entregas por destinatário
+GET {{baseUrl}}/api/v1/entregas/destinatario/2
+Authorization: Bearer {{authToken}}
+
+### Listar entregas por status
+GET {{baseUrl}}/api/v1/entregas/status/AGUARDANDO_RETIRADA
+Authorization: Bearer {{authToken}}
+
+### Listar entregas por período
+GET {{baseUrl}}/api/v1/entregas/periodo?inicio=2023-01-01T00:00:00&fim=2023-12-31T23:59:59
+Authorization: Bearer {{authToken}}
+
+### Buscar entrega por ID
+GET {{baseUrl}}/api/v1/entregas/1
+Authorization: Bearer {{authToken}}
+
+### Buscar entrega por código de rastreio
+GET {{baseUrl}}/api/v1/entregas/rastreio/ABC123456
+Authorization: Bearer {{authToken}}
+
+### Registrar nova entrega (requer permissão de ADMINISTRADOR ou ENTREGADOR)
+POST {{baseUrl}}/api/v1/entregas
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "descricao": "Pacote de livros",
+  "codigoRastreio": "XYZ987654",
+  "status": "AGUARDANDO_RETIRADA",
+  "dataEntrega": "2023-06-01T14:30:00",
+  "entregador": {
+    "id": 1
+  },
+  "destinatario": {
+    "id": 2
+  },
+  "compartimento": {
+    "id": 1
+  }
+}
+
+### Registrar retirada de entrega
+PUT {{baseUrl}}/api/v1/entregas/1/retirada?codigoAcesso=123456
+Authorization: Bearer {{authToken}}
+
+### Cancelar entrega (requer permissão de ADMINISTRADOR ou ENTREGADOR)
+PUT {{baseUrl}}/api/v1/entregas/2/cancelar
+Authorization: Bearer {{authToken}}

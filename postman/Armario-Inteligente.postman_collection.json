@@ -1,0 +1,1026 @@
+{
+  "info": {
+    "_postman_id": "armario-inteligente-collection",
+    "name": "Armário Inteligente - API Collection",
+    "description": "Coleção completa de testes para a API do Sistema Armário Inteligente",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "item": [
+    {
+      "name": "🔐 Autenticação",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login successful\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    ",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.token).to.exist;",
+                  "    ",
+                  "    // Salvar token na variável de ambiente",
+                  "    pm.environment.set(\"token\", jsonData.token);",
+                  "    ",
+                  "    console.log(\"Token salvo:\", jsonData.token);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has correct structure\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.expect(jsonData).to.have.property('tipo');",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('nome');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    pm.expect(jsonData).to.have.property('tipoUsuario');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@smartlocker.com\",\n  \"senha\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login com credenciais de administrador"
+          }
+        },
+        {
+          "name": "Login Cliente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"joao.silva@exemplo.com\",\n  \"senha\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login com credenciais de cliente"
+          }
+        },
+        {
+          "name": "Login Inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Login should fail with invalid credentials\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usuario@inexistente.com\",\n  \"senha\": \"senhaerrada\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Teste de login com credenciais inválidas"
+          }
+        }
+      ],
+      "description": "Endpoints de autenticação e autorização"
+    },
+    {
+      "name": "👥 Usuários",
+      "item": [
+        {
+          "name": "Listar Usuários",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios"]
+            },
+            "description": "Listar todos os usuários do sistema"
+          }
+        },
+        {
+          "name": "Buscar Usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuarios/1",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "1"]
+            },
+            "description": "Buscar usuário específico por ID"
+          }
+        },
+        {
+          "name": "Criar Usuário",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    ",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.nome).to.eql('Teste Postman');",
+                  "    ",
+                  "    // Salvar ID do usuário criado",
+                  "    pm.environment.set('created_user_id', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Teste Postman\",\n  \"email\": \"teste.postman@exemplo.com\",\n  \"senha\": \"senha123\",\n  \"telefone\": \"(81) 98765-4321\",\n  \"tipoUsuarioId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios"]
+            },
+            "description": "Criar novo usuário no sistema"
+          }
+        },
+        {
+          "name": "Atualizar Usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Teste Postman Atualizado\",\n  \"telefone\": \"(81) 91234-5678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/usuarios/{{created_user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "{{created_user_id}}"]
+            },
+            "description": "Atualizar dados de usuário existente"
+          }
+        },
+        {
+          "name": "Listar Usuários Ativos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuarios/ativos",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "ativos"]
+            },
+            "description": "Listar apenas usuários ativos"
+          }
+        },
+        {
+          "name": "Desativar Usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/usuarios/{{created_user_id}}/desativar",
+              "host": ["{{base_url}}"],
+              "path": ["usuarios", "{{created_user_id}}", "desativar"]
+            },
+            "description": "Desativar usuário (soft delete)"
+          }
+        }
+      ],
+      "description": "Operações CRUD para usuários"
+    },
+    {
+      "name": "🏢 Condomínios",
+      "item": [
+        {
+          "name": "Listar Condomínios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is an array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/condominios",
+              "host": ["{{base_url}}"],
+              "path": ["condominios"]
+            },
+            "description": "Listar todos os condomínios"
+          }
+        },
+        {
+          "name": "Buscar Condomínio por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/condominios/1",
+              "host": ["{{base_url}}"],
+              "path": ["condominios", "1"]
+            },
+            "description": "Buscar condomínio específico por ID"
+          }
+        },
+        {
+          "name": "Criar Condomínio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Condominium created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    ",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.nome).to.eql('Condomínio Teste Postman');",
+                  "    ",
+                  "    // Salvar ID do condomínio criado",
+                  "    pm.environment.set('created_condominio_id', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Condomínio Teste Postman\",\n  \"endereco\": \"Rua dos Testes, 789\",\n  \"cep\": \"50020-300\",\n  \"cidade\": \"Recife\",\n  \"estado\": \"PE\",\n  \"telefone\": \"(81) 3333-7777\",\n  \"email\": \"teste@postman.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/condominios",
+              "host": ["{{base_url}}"],
+              "path": ["condominios"]
+            },
+            "description": "Criar novo condomínio"
+          }
+        },
+        {
+          "name": "Atualizar Condomínio",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefone\": \"(81) 3333-8888\",\n  \"email\": \"novo.email@postman.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/condominios/{{created_condominio_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["condominios", "{{created_condominio_id}}"]
+            },
+            "description": "Atualizar dados de condomínio existente"
+          }
+        }
+      ],
+      "description": "Operações CRUD para condomínios"
+    },
+    {
+      "name": "🗄️ Armários",
+      "item": [
+        {
+          "name": "Listar Armários",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/armarios",
+              "host": ["{{base_url}}"],
+              "path": ["armarios"]
+            },
+            "description": "Listar todos os armários"
+          }
+        },
+        {
+          "name": "Listar Armários por Condomínio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/armarios/condominio/1",
+              "host": ["{{base_url}}"],
+              "path": ["armarios", "condominio", "1"]
+            },
+            "description": "Listar armários de um condomínio específico"
+          }
+        },
+        {
+          "name": "Buscar Armário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/armarios/1",
+              "host": ["{{base_url}}"],
+              "path": ["armarios", "1"]
+            },
+            "description": "Buscar armário específico por ID"
+          }
+        },
+        {
+          "name": "Criar Armário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identificacao\": \"ARM-TESTE\",\n  \"localizacao\": \"Área de Testes\",\n  \"descricao\": \"Armário criado via Postman\",\n  \"condominioId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/armarios",
+              "host": ["{{base_url}}"],
+              "path": ["armarios"]
+            },
+            "description": "Criar novo armário"
+          }
+        }
+      ],
+      "description": "Operações para gestão de armários"
+    },
+    {
+      "name": "📦 Compartimentos",
+      "item": [
+        {
+          "name": "Listar Compartimentos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/compartimentos",
+              "host": ["{{base_url}}"],
+              "path": ["compartimentos"]
+            },
+            "description": "Listar todos os compartimentos"
+          }
+        },
+        {
+          "name": "Listar Compartimentos por Armário",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/compartimentos/armario/1",
+              "host": ["{{base_url}}"],
+              "path": ["compartimentos", "armario", "1"]
+            },
+            "description": "Listar compartimentos de um armário específico"
+          }
+        },
+        {
+          "name": "Compartimentos Disponíveis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/compartimentos/status?ocupado=false",
+              "host": ["{{base_url}}"],
+              "path": ["compartimentos", "status"],
+              "query": [
+                {
+                  "key": "ocupado",
+                  "value": "false"
+                }
+              ]
+            },
+            "description": "Listar compartimentos disponíveis"
+          }
+        },
+        {
+          "name": "Compartimentos Ocupados",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/compartimentos/status?ocupado=true",
+              "host": ["{{base_url}}"],
+              "path": ["compartimentos", "status"],
+              "query": [
+                {
+                  "key": "ocupado",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Listar compartimentos ocupados"
+          }
+        },
+        {
+          "name": "Atualizar Status Compartimento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/compartimentos/1/status?ocupado=true",
+              "host": ["{{base_url}}"],
+              "path": ["compartimentos", "1", "status"],
+              "query": [
+                {
+                  "key": "ocupado",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Atualizar status de ocupação do compartimento"
+          }
+        },
+        {
+          "name": "Gerar Novo Código de Acesso",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/compartimentos/1/codigo-acesso",
+              "host": ["{{base_url}}"],
+              "path": ["compartimentos", "1", "codigo-acesso"]
+            },
+            "description": "Gerar novo código de acesso para o compartimento"
+          }
+        }
+      ],
+      "description": "Operações para gestão de compartimentos"
+    },
+    {
+      "name": "🚚 Entregas",
+      "item": [
+        {
+          "name": "Listar Entregas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": ["{{base_url}}"],
+              "path": ["entregas"]
+            },
+            "description": "Listar todas as entregas"
+          }
+        },
+        {
+          "name": "Registrar Entrega",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Delivery created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    ",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.codigoRastreio).to.eql('BR987654321');",
+                  "    ",
+                  "    // Salvar ID da entrega criada",
+                  "    pm.environment.set('created_entrega_id', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"codigoRastreio\": \"BR987654321\",\n  \"observacao\": \"Entrega teste via Postman\",\n  \"compartimentoId\": 2,\n  \"entregadorId\": 3,\n  \"destinatarioId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/entregas",
+              "host": ["{{base_url}}"],
+              "path": ["entregas"]
+            },
+            "description": "Registrar nova entrega no sistema"
+          }
+        },
+        {
+          "name": "Buscar Entrega por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{created_entrega_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["entregas", "{{created_entrega_id}}"]
+            },
+            "description": "Buscar entrega específica por ID"
+          }
+        },
+        {
+          "name": "Buscar por Código de Rastreio",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas/rastreio/BR987654321",
+              "host": ["{{base_url}}"],
+              "path": ["entregas", "rastreio", "BR987654321"]
+            },
+            "description": "Buscar entrega por código de rastreio"
+          }
+        },
+        {
+          "name": "Entregas por Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas/status/ENTREGUE",
+              "host": ["{{base_url}}"],
+              "path": ["entregas", "status", "ENTREGUE"]
+            },
+            "description": "Listar entregas por status"
+          }
+        },
+        {
+          "name": "Registrar Retirada",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{created_entrega_id}}/retirada?codigoAcesso=234567",
+              "host": ["{{base_url}}"],
+              "path": ["entregas", "{{created_entrega_id}}", "retirada"],
+              "query": [
+                {
+                  "key": "codigoAcesso",
+                  "value": "234567"
+                }
+              ]
+            },
+            "description": "Registrar retirada de entrega"
+          }
+        },
+        {
+          "name": "Cancelar Entrega",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/entregas/{{created_entrega_id}}/cancelar",
+              "host": ["{{base_url}}"],
+              "path": ["entregas", "{{created_entrega_id}}", "cancelar"]
+            },
+            "description": "Cancelar entrega"
+          }
+        }
+      ],
+      "description": "Operações para gestão de entregas"
+    },
+    {
+      "name": "📅 Reservas",
+      "item": [
+        {
+          "name": "Listar Reservas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservas",
+              "host": ["{{base_url}}"],
+              "path": ["reservas"]
+            },
+            "description": "Listar todas as reservas"
+          }
+        },
+        {
+          "name": "Criar Reserva",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Reservation created successfully\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    ",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.status).to.eql('ATIVA');",
+                  "    ",
+                  "    // Salvar ID da reserva criada",
+                  "    pm.environment.set('created_reserva_id', jsonData.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dataInicio\": \"2024-01-20T09:00:00\",\n  \"dataFim\": \"2024-01-21T18:00:00\",\n  \"observacao\": \"Reserva teste via Postman\",\n  \"compartimentoId\": 3,\n  \"usuarioId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservas",
+              "host": ["{{base_url}}"],
+              "path": ["reservas"]
+            },
+            "description": "Criar nova reserva"
+          }
+        },
+        {
+          "name": "Buscar Reserva por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservas/{{created_reserva_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["reservas", "{{created_reserva_id}}"]
+            },
+            "description": "Buscar reserva específica por ID"
+          }
+        },
+        {
+          "name": "Reservas por Usuário",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservas/usuario/2",
+              "host": ["{{base_url}}"],
+              "path": ["reservas", "usuario", "2"]
+            },
+            "description": "Listar reservas de um usuário específico"
+          }
+        },
+        {
+          "name": "Reservas por Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservas/status/ATIVA",
+              "host": ["{{base_url}}"],
+              "path": ["reservas", "status", "ATIVA"]
+            },
+            "description": "Listar reservas por status"
+          }
+        },
+        {
+          "name": "Cancelar Reserva",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservas/{{created_reserva_id}}/cancelar",
+              "host": ["{{base_url}}"],
+              "path": ["reservas", "{{created_reserva_id}}", "cancelar"]
+            },
+            "description": "Cancelar reserva existente"
+          }
+        },
+        {
+          "name": "Concluir Reserva",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservas/{{created_reserva_id}}/concluir",
+              "host": ["{{base_url}}"],
+              "path": ["reservas", "{{created_reserva_id}}", "concluir"]
+            },
+            "description": "Concluir reserva existente"
+          }
+        }
+      ],
+      "description": "Operações para gestão de reservas"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Script executado antes de cada requisição",
+          "console.log('Executando requisição para:', pm.request.url);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": ["// Script executado após cada requisição", "console.log('Status da resposta:', pm.response.status);"]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "created_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "created_condominio_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "created_entrega_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "created_reserva_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
