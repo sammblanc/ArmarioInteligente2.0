@@ -241,13 +241,13 @@ O sistema é inicializado com os seguintes dados:
 
 ### Tipos de Usuário
 - Administrador
-- Cliente
+- Morador
 - Funcionário
 - Entregador
 
 ### Usuários
 - Admin: admin@smartlocker.com / admin123
-- Cliente: joao.silva@exemplo.com / senha123
+- Morador: joao.silva@exemplo.com / senha123
 - Entregador: maria.oliveira@exemplo.com / senha456
 
 ### Condomínios
