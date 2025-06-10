@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Banco de dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: armario-inteligente-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: armariointeligente
+      POSTGRES_USER: armariointeligente
+      POSTGRES_PASSWORD: armario123
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db:/docker-entrypoint-initdb.d
+    networks:
+      - armario-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U armariointeligente -d armariointeligente"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Aplicação Spring Boot
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: armario-inteligente-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/armariointeligente
+      SPRING_DATASOURCE_USERNAME: armariointeligente
+      SPRING_DATASOURCE_PASSWORD: armario123
+      JWT_SECRET: armariointeligenteSecretKey2023@Unit#TokSeg$SystemSecureJwtToken
+      JWT_EXPIRATION: 86400000
+    ports:
+      - "8080:8080"
+    networks:
+      - armario-network
+    volumes:
+      - app_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # pgAdmin para administração do banco (opcional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: armario-inteligente-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@armariointeligente.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - armario-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  app_logs:
+    driver: local
+
+networks:
+  armario-network:
+    driver: bridge

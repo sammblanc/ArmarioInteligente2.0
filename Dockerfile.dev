@@ -1,0 +1,26 @@
+# Dockerfile para desenvolvimento com hot reload
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Instalar Maven e curl
+RUN apt-get update && \
+    apt-get install -y maven curl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copiar arquivos de configuração
+COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
+
+# Baixar dependências
+RUN mvn dependency:go-offline -B
+
+# Copiar código fonte
+COPY src src
+
+# Expor porta
+EXPOSE 8080
+
+# Comando para desenvolvimento com hot reload
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.profiles=docker"]
