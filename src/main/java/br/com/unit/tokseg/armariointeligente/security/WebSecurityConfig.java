@@ -81,7 +81,6 @@ public class WebSecurityConfig {
 
         http.authenticationProvider(authenticationProvider());
 
-        // MUDANÇA 3: Usamos o filtro injetado 'authTokenFilter' em vez de chamar um método
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
