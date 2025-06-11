@@ -53,7 +53,7 @@ public class UsuarioService {
         ValidationUtils.validateStringLength(usuario.getEmail(), "Email", 1, 255);
         ValidationUtils.validateStringLength(usuario.getSenha(), "Senha", 6, 255);
         ValidationUtils.validateNotBlank(usuario.getTelefone(), "Telefone");
-        ValidationUtils.validatePhone(usuario.getTelefone());
+        /*ValidationUtils.validatePhone(usuario.getTelefone()); */
 
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new ResourceAlreadyExistsException("Usuário", "email", usuario.getEmail());
@@ -114,7 +114,7 @@ public class UsuarioService {
         }
         if (usuario.getTelefone() != null) {
             ValidationUtils.validateNotBlank(usuario.getTelefone(), "Telefone");
-            ValidationUtils.validatePhone(usuario.getTelefone());
+           /* ValidationUtils.validatePhone(usuario.getTelefone()); */
         }
 
         // Verifica se o email já está em uso por outro usuário

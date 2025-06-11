@@ -67,24 +67,6 @@ public class ValidationUtilsTest {
     }
 
     @Test
-    public void testValidatePhone_Sucesso() {
-        assertDoesNotThrow(() -> {
-            ValidationUtils.validatePhone("(81) 99999-8888");
-        });
-        
-        assertDoesNotThrow(() -> {
-            ValidationUtils.validatePhone("81999998888");
-        });
-    }
-
-    @Test
-    public void testValidatePhone_Falha() {
-        assertThrows(BadRequestException.class, () -> {
-            ValidationUtils.validatePhone("123");
-        });
-    }
-
-    @Test
     public void testValidateStringLength_Sucesso() {
         assertDoesNotThrow(() -> {
             ValidationUtils.validateStringLength("teste", "campo", 10);

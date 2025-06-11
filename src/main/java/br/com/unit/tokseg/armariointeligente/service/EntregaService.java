@@ -237,7 +237,7 @@ public class EntregaService {
         return entregaRepository.findByDataEntregaBetween(inicio, fim);
     }
 
-    // Método para verificação de segurança, usado em @PreAuthorize no Controller
+
     public boolean isDestinatarioDaEntregaOuAdmin(Long destinatarioIdQuery, Object principal) {
         if (principal instanceof UserDetailsImpl userDetails) {
             if (userDetails.getId().equals(destinatarioIdQuery)) {
@@ -254,7 +254,6 @@ public class EntregaService {
         return false;
     }
 
-    // Método para verificar se o usuário logado é o destinatário de UMA entrega específica
     public boolean isDestinatario(Long entregaId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetailsImpl)) {
