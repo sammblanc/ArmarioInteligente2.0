@@ -1,11 +1,14 @@
 package br.com.unit.tokseg.armariointeligente.controller;
 
+import br.com.unit.tokseg.armariointeligente.dto.CompartimentoDTO; // <-- IMPORT ADICIONADO
 import br.com.unit.tokseg.armariointeligente.exception.ResourceNotFoundException;
+import br.com.unit.tokseg.armariointeligente.model.Armario; // <-- IMPORT ADICIONADO
 import br.com.unit.tokseg.armariointeligente.model.Compartimento;
 import br.com.unit.tokseg.armariointeligente.service.CompartimentoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid; // <-- IMPORT ADICIONADO
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +27,19 @@ public class CompartimentoController {
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Criar compartimento", description = "Cria um novo compartimento no sistema")
-    public ResponseEntity<?> criarCompartimento(@RequestBody Compartimento compartimento) {
+    // MUDANÇA AQUI: Recebe o DTO em vez da entidade
+    public ResponseEntity<?> criarCompartimento(@Valid @RequestBody CompartimentoDTO compartimentoDTO) {
+        // LÓGICA DE CONVERSÃO DTO -> ENTIDADE
+        Compartimento compartimento = new Compartimento();
+        compartimento.setNumero(compartimentoDTO.getNumero());
+        compartimento.setTamanho(compartimentoDTO.getTamanho());
+
+        // Associa ao armário pai usando o ID fornecido no DTO
+        Armario armarioPai = new Armario();
+        armarioPai.setId(compartimentoDTO.getArmarioId());
+        compartimento.setArmario(armarioPai);
+
+        // O resto da lógica permanece o mesmo
         Compartimento novoCompartimento = compartimentoService.criarCompartimento(compartimento);
         return ResponseEntity.ok(novoCompartimento);
     }
@@ -65,8 +80,8 @@ public class CompartimentoController {
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     @Operation(summary = "Atualizar compartimento", description = "Atualiza os dados de um compartimento existente")
     public ResponseEntity<?> atualizarCompartimento(
-            @Parameter(description = "ID do compartimento") @PathVariable Long id, 
-            @RequestBody Compartimento compartimento) {
+            @Parameter(description = "ID do compartimento") @PathVariable Long id,
+            @RequestBody Compartimento compartimento) { // Futuramente, considere usar um DTO de atualização aqui também
         Compartimento compartimentoAtualizado = compartimentoService.atualizarCompartimento(id, compartimento);
         return ResponseEntity.ok(compartimentoAtualizado);
     }
@@ -75,7 +90,7 @@ public class CompartimentoController {
     @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('ENTREGADOR')")
     @Operation(summary = "Atualizar status do compartimento", description = "Atualiza o status de ocupação de um compartimento")
     public ResponseEntity<?> atualizarStatusCompartimento(
-            @Parameter(description = "ID do compartimento") @PathVariable Long id, 
+            @Parameter(description = "ID do compartimento") @PathVariable Long id,
             @Parameter(description = "Status de ocupação (true/false)") @RequestParam Boolean ocupado) {
         Compartimento compartimentoAtualizado = compartimentoService.atualizarStatusCompartimento(id, ocupado);
         return ResponseEntity.ok(compartimentoAtualizado);

@@ -154,6 +154,12 @@ public class UsuarioController {
         usuario.setSenha(dto.getSenha()); // A senha será criptografada no service
         usuario.setAtivo(dto.getAtivo() != null ? dto.getAtivo() : true);
 
+
+        if (dto.getTelefone() != null) {
+            // Remove tudo que não for dígito do telefone
+            String telefoneLimpo = dto.getTelefone().replaceAll("\\D", "");
+            usuario.setTelefone(telefoneLimpo);
+        }
         // Se tipoUsuarioId foi fornecido, cria um TipoUsuario com esse ID
         if (dto.getTipoUsuarioId() != null) {
             TipoUsuario tipoUsuario = new TipoUsuario();

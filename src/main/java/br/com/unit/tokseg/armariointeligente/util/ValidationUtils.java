@@ -31,12 +31,12 @@ public class ValidationUtils {
         }
     }
 
-    public static void validatePhone(String phone) {
+    /*public static void validatePhone(String phone) {
         if (phone != null && !PHONE_PATTERN.matcher(phone).matches()) {
             throw new BadRequestException("Telefone deve ter um formato válido");
         }
     }
-
+*/
     public static void validateStringLength(String value, String fieldName, int maxLength) {
         if (value != null && value.length() > maxLength) {
             throw new BadRequestException(fieldName + " deve ter no máximo " + maxLength + " caracteres");

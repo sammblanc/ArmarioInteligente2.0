@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/v1/notifications")
 @Tag(name = "Notificações", description = "Gerenciamento de notificações do sistema")
 @SecurityRequirement(name = "Bearer Authentication")
 public class NotificationController {
@@ -44,7 +44,7 @@ public class NotificationController {
         @ApiResponse(responseCode = "401", description = "Não autorizado"),
         @ApiResponse(responseCode = "403", description = "Acesso negado")
     })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PORTEIRO')")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('PORTEIRO')")
     public ResponseEntity<Page<NotificationDTO>> listarTodas(
             @Parameter(description = "Número da página (0-indexed)")
             @RequestParam(defaultValue = "0") int page,
@@ -73,7 +73,7 @@ public class NotificationController {
         @ApiResponse(responseCode = "404", description = "Notificação não encontrada"),
         @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PORTEIRO')")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('PORTEIRO')")
     public ResponseEntity<NotificationDTO> buscarPorId(
             @Parameter(description = "ID da notificação")
             @PathVariable Long id) {
@@ -85,7 +85,7 @@ public class NotificationController {
     @GetMapping("/search")
     @Operation(summary = "Buscar notificações por filtros", 
                description = "Busca notificações por destinatário, status, tipo ou período")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PORTEIRO')")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('PORTEIRO')")
     public ResponseEntity<Page<NotificationDTO>> buscarComFiltros(
             @Parameter(description = "Email do destinatário")
             @RequestParam(required = false) String destinatario,
@@ -134,7 +134,7 @@ public class NotificationController {
         @ApiResponse(responseCode = "400", description = "Dados inválidos"),
         @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PORTEIRO')")
+    @PreAuthorize("hasRole('ADMINISTRADOR') or hasRole('PORTEIRO')")
     public ResponseEntity<Map<String, String>> enviarNotificacaoPersonalizada(
             @Parameter(description = "Dados da notificação a ser enviada")
             @Valid @RequestBody NotificationRequestDTO request) {
@@ -158,7 +158,7 @@ public class NotificationController {
         @ApiResponse(responseCode = "404", description = "Notificação não encontrada"),
         @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Map<String, String>> reenviarNotificacao(
             @Parameter(description = "ID da notificação a ser reenviada")
             @PathVariable Long id) {
@@ -181,7 +181,7 @@ public class NotificationController {
         @ApiResponse(responseCode = "404", description = "Notificação não encontrada"),
         @ApiResponse(responseCode = "401", description = "Não autorizado")
     })
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Map<String, String>> cancelarNotificacao(
             @Parameter(description = "ID da notificação a ser cancelada")
             @PathVariable Long id) {
@@ -198,7 +198,7 @@ public class NotificationController {
     @GetMapping("/pending")
     @Operation(summary = "Listar notificações pendentes", 
                description = "Retorna todas as notificações pendentes de envio")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<List<NotificationDTO>> listarNotificacoesPendentes() {
         List<NotificationDTO> pendentes = notificationHistoryService.buscarNotificacoesPendentes();
         return ResponseEntity.ok(pendentes);
@@ -207,7 +207,7 @@ public class NotificationController {
     @GetMapping("/stats")
     @Operation(summary = "Estatísticas de notificações", 
                description = "Retorna estatísticas sobre as notificações do sistema")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<Map<String, Object>> obterEstatisticas() {
         // Implementar lógica de estatísticas se necessário
         Map<String, Object> stats = new HashMap<>();

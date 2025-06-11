@@ -13,6 +13,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
+import org.springframework.security.core.GrantedAuthority;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -25,10 +28,17 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+
+        // Extrai as roles da autenticação
+        List<String> roles = userPrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
+                // Adiciona a claim "roles" ao payload do token
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)

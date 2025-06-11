@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -39,24 +42,32 @@ public class AuthController {
     @PostMapping("/login")
     @Operation(summary = "Autenticar usuário", description = "Autentica um usuário e retorna um token JWT")
     public ResponseEntity<?> authenticateUser(@RequestBody AuthRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha()));
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getSenha()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String tipoUsuario = userDetails.getAuthorities().stream()
-                .findFirst()
-                .map(item -> item.getAuthority().replace("ROLE_", ""))
-                .orElse("");
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            String tipoUsuario = userDetails.getAuthorities().stream()
+                    .findFirst()
+                    .map(item -> item.getAuthority().replace("ROLE_", ""))
+                    .orElse("");
 
-        return ResponseEntity.ok(new AuthResponse(
-                jwt,
-                "Bearer",
-                userDetails.getId(),
-                userDetails.getNome(),
-                userDetails.getEmail(),
-                tipoUsuario));
+            // Retorna 200 OK em caso de sucesso
+            return ResponseEntity.ok(new AuthResponse(
+                    jwt,
+                    "Bearer",
+                    userDetails.getId(),
+                    userDetails.getNome(),
+                    userDetails.getEmail(),
+                    tipoUsuario));
+
+        } catch (AuthenticationException e) {
+            // Captura a falha de autenticação e retorna 401 Unauthorized
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Credenciais inválidas", "message", "O email ou a senha fornecidos estão incorretos."));
+        }
     }
 }
